@@ -1,5 +1,6 @@
 import ical from 'ical-generator';
 import {UniversityEvent} from "./data/event";
+import { getVtimezoneComponent } from '@touch4it/ical-timezones';
 
 type GoogleLocationResponse = {
     results: {
@@ -34,6 +35,10 @@ export async function findCachedLocation(key: string, KV: KVNamespace, google: s
 
 export async function generateCalendar(events: UniversityEvent[], googleKey: string, KV: KVNamespace): Promise<string> {
     const calendar = ical({name: "Newcastle University"});
+    calendar.timezone({
+        name: 'Europe/London',
+        generator: getVtimezoneComponent,
+    });
 
     for (const event of events) {
         const cacheKey = event.location;
@@ -43,6 +48,7 @@ export async function generateCalendar(events: UniversityEvent[], googleKey: str
         calendar.createEvent({
             start: event.start,
             end: event.end,
+            timezone: 'Europe/London',
             summary: event.module + ` in ${event.room}`,
             description: `With ${event.lecturers.join(", ")}`,
             location: building ? {

@@ -8,9 +8,12 @@ importers:
 
   .:
     dependencies:
+      '@touch4it/ical-timezones':
+        specifier: ^1.9.0
+        version: 1.9.0
       ical-generator:
         specifier: ^9.0.0
-        version: 9.0.0(@types/node@24.5.2)(moment-timezone@0.6.0)(moment@2.30.1)(rrule@2.8.1)
+        version: 9.0.0(@touch4it/ical-timezones@1.9.0)(@types/node@24.5.2)(moment-timezone@0.6.0)(moment@2.30.1)(rrule@2.8.1)
       node-ical:
         specifier: ^0.21.0
         version: 0.21.0
@@ -823,6 +826,10 @@ packages:
 
   '@speed-highlight/core@1.2.7':
     resolution: {integrity: sha512-0dxmVj4gxg3Jg879kvFS/msl4s9F3T9UXC1InxgOf7t5NvcPD97u/WTA5vL/IxWHMn7qSxBozqrnnE2wvl1m8g==}
+
+  '@touch4it/ical-timezones@1.9.0':
+    resolution: {integrity: sha512-UAiZMrFlgMdOIaJDPsKu5S7OecyMLr3GGALJTYkRgHmsHAA/8Ixm1qD09ELP2X7U1lqgrctEgvKj9GzMbczC+g==}
+    engines: {node: '>= 14.0.0'}
 
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
@@ -1845,6 +1852,8 @@ snapshots:
 
   '@speed-highlight/core@1.2.7': {}
 
+  '@touch4it/ical-timezones@1.9.0': {}
+
   '@types/estree@1.0.8': {}
 
   '@types/node@24.5.2':
@@ -2071,8 +2080,9 @@ snapshots:
 
   glob-to-regexp@0.4.1: {}
 
-  ical-generator@9.0.0(@types/node@24.5.2)(moment-timezone@0.6.0)(moment@2.30.1)(rrule@2.8.1):
+  ical-generator@9.0.0(@touch4it/ical-timezones@1.9.0)(@types/node@24.5.2)(moment-timezone@0.6.0)(moment@2.30.1)(rrule@2.8.1):
     optionalDependencies:
+      '@touch4it/ical-timezones': 1.9.0
       '@types/node': 24.5.2
       moment: 2.30.1
       moment-timezone: 0.6.0

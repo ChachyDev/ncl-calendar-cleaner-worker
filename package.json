@@ -17,6 +17,7 @@
 		"wrangler": "^4.7.0"
 	},
 	"dependencies": {
+		"@touch4it/ical-timezones": "^1.9.0",
 		"ical-generator": "^9.0.0",
 		"node-ical": "^0.21.0"
 	}
