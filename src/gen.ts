@@ -20,7 +20,7 @@ export async function findLocationFromGoogle(location: string, googleKey: string
     const data: GoogleLocationResponse = await res.json();
     if (data.status !== "OK") return undefined;
 
-    const locationData= JSON.stringify(data);
+    const locationData = JSON.stringify(data);
     await KV.put(location, locationData);
 
     return locationData;

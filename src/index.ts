@@ -23,7 +23,8 @@ export default {
     },
 } satisfies ExportedHandler<{
     GOOGLE_MAPS_API_KEY: string;
-    KV: KVNamespace }>;
+    KV: KVNamespace
+}>;
 
 const locationFixes = {
     "Science Central": "Newcastle Helix",
