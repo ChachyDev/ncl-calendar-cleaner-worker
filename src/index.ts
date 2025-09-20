@@ -1,44 +1,70 @@
+import ical, {VEvent} from "node-ical";
+import {EventType, UniversityEvent} from "./data/event";
+import {generateCalendar} from "./gen";
+
 export default {
-	async fetch(request): Promise<Response> {
-		const BLOCKED_HOSTNAMES = ["nope.mywebsite.com", "bye.website.com"];
-		// Return a new Response based on a URL's hostname
-		const url = new URL(request.url);
-		if (BLOCKED_HOSTNAMES.includes(url.hostname)) {
-			return new Response("Blocked Host", { status: 403 });
-		}
-		// Block paths ending in .doc or .xml based on the URL's file extension
-		const forbiddenExtRegExp = new RegExp(/\.(doc|xml)$/);
-		if (forbiddenExtRegExp.test(url.pathname)) {
-			return new Response("Blocked Extension", { status: 403 });
-		}
-		// On HTTP method
-		if (request.method === "POST") {
-			return new Response("Response for POST");
-		}
-		// On User Agent
-		const userAgent = request.headers.get("User-Agent") || "";
-		if (userAgent.includes("bot")) {
-			return new Response("Block User Agent containing bot", { status: 403 });
-		}
-		// On Client's IP address
-		const clientIP = request.headers.get("CF-Connecting-IP");
-		if (clientIP === "1.2.3.4") {
-			return new Response("Block the IP 1.2.3.4", { status: 403 });
-		}
-		// On ASN
-		if (request.cf && request.cf.asn == 64512) {
-			return new Response("Block the ASN 64512 response");
-		}
-		// On Device Type
-		// Requires Enterprise "CF-Device-Type Header" zone setting or
-		// Page Rule with "Cache By Device Type" setting applied.
-		const device = request.headers.get("CF-Device-Type");
-		if (device === "mobile") {
-			return Response.redirect("https://mobile.example.com");
-		}
-		console.error(
-			"Getting Client's IP address, device type, and ASN are not supported in playground. Must test on a live worker",
-		);
-		return fetch(request);
-	},
-} satisfies ExportedHandler;
+    async fetch(request, env): Promise<Response> {
+        const url = new URL(request.url);
+        if (!url.pathname.startsWith("/itservice/")) {
+            return new Response(JSON.stringify({success: false, message: "Invalid URL"}), {status: 400});
+        }
+
+        const nclCalendar = `https://m.ncl.ac.uk${url.pathname}${url.search}`;
+        const events = await ical.async.fromURL(nclCalendar);
+        const uniEvents = Object.values(events)
+            .filter(event => event.type === "VEVENT")
+            .map(parseEvent);
+
+        const response = new Response(await generateCalendar(uniEvents, env.GOOGLE_MAPS_API_KEY, env.KV));
+        response.headers.set("Content-Type", "text/calendar; charset=utf-8");
+        response.headers.set("Content-Disposition", 'attachment; filename="timetable.ics"');
+
+        return response;
+    },
+} satisfies ExportedHandler<{
+    GOOGLE_MAPS_API_KEY: string;
+    KV: KVNamespace }>;
+
+const locationFixes = {
+    "Science Central": "Newcastle Helix",
+    "FDC": "Frederick Douglass Centre"
+};
+
+function normaliseLocation(raw: string) {
+    let normalised = raw;
+    for (const [quirk, replacement] of Object.entries(locationFixes)) {
+        if (normalised.includes(quirk)) {
+            normalised = normalised.replace(quirk, replacement);
+        }
+    }
+    return normalised;
+}
+
+function parseEvent(event: VEvent): UniversityEvent {
+    const description = event.description.split("\n");
+    const module = description[0];
+    const eventType = description[1];
+    const lecturers = description[2].split(",");
+    const location = description[3].split(", ");
+
+
+    let type: EventType | undefined = undefined;
+    switch (eventType) {
+        case "Lecture":
+            type = "lecture";
+            break;
+        case "Practical":
+            type = "practical";
+            break;
+    }
+
+    return {
+        type,
+        module,
+        lecturers,
+        location: normaliseLocation(location.splice(location.length - 2).join(", ")),
+        room: event.location,
+        start: event.start,
+        end: event.end
+    };
+}
