@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@touch4it/ical-timezones':
-        specifier: ^1.9.0
-        version: 1.9.0
       ical-generator:
         specifier: ^9.0.0
         version: 9.0.0(@touch4it/ical-timezones@1.9.0)(@types/node@24.5.2)(moment-timezone@0.6.0)(moment@2.30.1)(rrule@2.8.1)
@@ -1852,7 +1849,8 @@ snapshots:
 
   '@speed-highlight/core@1.2.7': {}
 
-  '@touch4it/ical-timezones@1.9.0': {}
+  '@touch4it/ical-timezones@1.9.0':
+    optional: true
 
   '@types/estree@1.0.8': {}
 
