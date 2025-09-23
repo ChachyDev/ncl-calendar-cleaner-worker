@@ -24,6 +24,7 @@ async function findLocationFromGoogle(location: string, googleKey: string, KV: K
 }
 
 export async function findCachedLocation(key: string, KV: KVNamespace, google: string): Promise<GoogleLocationResponse | undefined> {
+    if (!key) return undefined;
     const data = await KV.get(key) ?? await findLocationFromGoogle(key, google, KV);
     if (!data) return undefined;
     return JSON.parse(data);
