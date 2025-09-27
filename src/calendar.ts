@@ -1,6 +1,7 @@
 import ical from 'ical-generator';
 import {UniversityEvent} from "./data/event";
-import {findCachedLocation} from "./data/location";
+import {cleanICSLocation, findCachedLocation} from "./data/location";
+
 
 export async function generateCalendar(events: UniversityEvent[], googleKey: string, KV: KVNamespace): Promise<string> {
     const calendar = ical({name: "Newcastle University"});
@@ -15,16 +16,16 @@ export async function generateCalendar(events: UniversityEvent[], googleKey: str
             start: event.start,
             end: event.end,
             timezone: 'Europe/London',
-            summary: event.module + ` in ${event.room}`,
+            summary: event.module + ` (${event.moduleCode})` + ` in ${event.room}`,
             description: `With ${event.lecturers.join(", ")}`,
             location: building ? {
                 title: event.location,
-                address: building.formatted_address,
+                address: cleanICSLocation(building.formatted_address),
                 geo: {
-                    lat: building.geometry.location.lng,
+                    lat: building.geometry.location.lat,
                     lon: building.geometry.location.lng
                 }
-            } : event.location,
+            } : event.location
         })
     }
 

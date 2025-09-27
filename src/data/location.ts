@@ -12,7 +12,7 @@ type GoogleLocationResponse = {
 }
 
 async function findLocationFromGoogle(location: string, googleKey: string, KV: KVNamespace): Promise<string | undefined> {
-    const url = encodeURI(`https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=${googleKey}`)
+    const url = encodeURI(`https://maps.googleapis.com/maps/api/geocode/json?address=${location + " Newcastle, England"}&key=${googleKey}`)
     const res = await fetch(url);
     const data: GoogleLocationResponse = await res.json();
     if (data.status !== "OK") return undefined;
@@ -23,16 +23,21 @@ async function findLocationFromGoogle(location: string, googleKey: string, KV: K
     return locationData;
 }
 
+export function cleanICSLocation(raw: string): string {
+    return raw.replace("\n", ", ").replace("\\", "")
+}
+
 export async function findCachedLocation(key: string, KV: KVNamespace, google: string): Promise<GoogleLocationResponse | undefined> {
     if (!key) return undefined;
     const data = await KV.get(key) ?? await findLocationFromGoogle(key, google, KV);
     if (!data) return undefined;
+    console.log(data);
     return JSON.parse(data);
 }
 
 const locationFixes = {
     "Science Central": "Newcastle Helix",
-    "FDC": "Frederick Douglass Centre"
+    "The Frederick Douglass Centre, Newcastle Helix": "The Frederick Douglass Centre"
 };
 
 export function normaliseLocation(raw: string) {

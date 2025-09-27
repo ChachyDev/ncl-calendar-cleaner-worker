@@ -5,6 +5,7 @@ export type EventType = "lecture" | "practical"
 export type UniversityEvent = {
     type?: EventType;
     module: string;
+    moduleCode: string;
     lecturers: string[];
     location: string;
     room: string;
@@ -15,6 +16,7 @@ export type UniversityEvent = {
 export function parseEvent(event: VEvent): UniversityEvent {
     const description = event.description.split("\n");
     const module = description[0];
+    const moduleCode = event.summary.split(" ")[0].split("/")[0];
     const eventType = description[1];
     const lecturers = description[2].split(",");
     const location = description[3].split(", ");
@@ -33,6 +35,7 @@ export function parseEvent(event: VEvent): UniversityEvent {
     return {
         type,
         module,
+        moduleCode,
         lecturers,
         location: normaliseLocation(location.splice(location.length - 2).join(", ")),
         room: event.location,
