@@ -31,7 +31,6 @@ export async function findCachedLocation(key: string, KV: KVNamespace, google: s
     if (!key) return undefined;
     const data = await KV.get(key) ?? await findLocationFromGoogle(key, google, KV);
     if (!data) return undefined;
-    console.log(data);
     return JSON.parse(data);
 }
 
